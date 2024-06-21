@@ -19,43 +19,21 @@ def read_txt(uploaded_file):
     return temp_txt
 
 # TODO: 修改score_word2vec逻辑
-def score_word2vec(model, temp_json, temp_text):
+def score_word2vec(model, file1, file2):
     '''
     比较两个文件的相似度
     '''
-    score_1, score_2, score_3 = 0, 0, 0
+    score = 0
+    n = min(len(file1), len(file2))
+
+    for i in range(n):
+        if len(file1[i]) < 2 or len(file2[i]) < 2:
+            tmp = 0
+        else:
+            tmp = model.wv.n_similarity(file1[i], file2[i])
+        score += tmp
     
-    for line in temp_text:
-        temp_line = ""
-        for i in line:
-            if i != " ":
-                temp_line = temp_line + i
-        if len(temp_json["分享的数据"]) < 2 or len(line) < 2:
-            score_1_ = 0
-        else:
-            score_1_ = model.wv.n_similarity("分享的数据" + temp_json["分享的数据"], line)
-        
-        if score_1_ > score_1:
-            score_1 = score_1_
-
-
-        if len(temp_json["收集的数据"]) < 2 or len(line) < 2:
-            score_2_=0
-        else:
-            score_2_ = model.wv.n_similarity("收集的数据" + temp_json["收集的数据"], line)
-        
-        if score_2_ > score_2:
-            score_2 = score_2_
-
-
-        if len(temp_json["收集的数据"]) < 2 or len(line) < 2:
-            score_3_ = 0
-        else:
-            score_3_ = model.wv.n_similarity("安全做法" + temp_json["安全做法"], line)
-        
-        if score_3_ > score_3:
-            score_3 = score_3_
-    return (score_1 + score_2 + score_3) / 3
+    return score / n
 
 model_class, tokenizer_class, pretrained_weights = (BertModel,BertTokenizer, 'chinese-bert-wwm-ext')
 #                                                    模型             分词器            词汇表
